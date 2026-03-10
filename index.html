@@ -969,11 +969,61 @@ function resetAll() {
    TAB → 4 пробіли
    ================================================================ */
 document.addEventListener("keydown", function(e) {
-  if (e.key === "Tab" && e.target.classList.contains("code-area")) {
+  if (!e.target.classList.contains("code-area")) return;
+  const ta = e.target;
+
+  /* ── TAB → вставити 4 пробіли ── */
+  if (e.key === "Tab") {
     e.preventDefault();
-    const ta = e.target, s = ta.selectionStart, end = ta.selectionEnd;
+    const s = ta.selectionStart, end = ta.selectionEnd;
     ta.value = ta.value.substring(0, s) + "    " + ta.value.substring(end);
     ta.selectionStart = ta.selectionEnd = s + 4;
+    return;
+  }
+
+  /* ── Enter → розумний автовідступ ── */
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const s   = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const val = ta.value;
+
+    // Знаходимо початок поточного рядка
+    const lineStart = val.lastIndexOf("\n", s - 1) + 1;
+    const currentLine = val.substring(lineStart, s);
+
+    // Підраховуємо кількість пробілів-відступу на поточному рядку
+    const indentMatch = currentLine.match(/^(\s*)/);
+    let indent = indentMatch ? indentMatch[1] : "";
+
+    // Якщо рядок закінчується на ":" — додаємо ще 4 пробіли
+    const trimmed = currentLine.trimEnd();
+    if (trimmed.endsWith(":")) {
+      indent += "    ";
+    }
+
+    // Вставляємо новий рядок з відступом
+    const insertion = "\n" + indent;
+    ta.value = val.substring(0, s) + insertion + val.substring(end);
+    ta.selectionStart = ta.selectionEnd = s + insertion.length;
+    return;
+  }
+
+  /* ── Backspace → видаляємо 4 пробіли якщо курсор після відступу ── */
+  if (e.key === "Backspace") {
+    const s = ta.selectionStart;
+    const end = ta.selectionEnd;
+    // Тільки якщо немає виділення
+    if (s !== end) return;
+    const val = ta.value;
+    const lineStart = val.lastIndexOf("\n", s - 1) + 1;
+    const beforeCursor = val.substring(lineStart, s);
+    // Якщо перед курсором рівно 4 пробіли (або кратно 4) — видаляємо блок
+    if (beforeCursor.length > 0 && beforeCursor.match(/^ +$/) && beforeCursor.length % 4 === 0) {
+      e.preventDefault();
+      ta.value = val.substring(0, s - 4) + val.substring(s);
+      ta.selectionStart = ta.selectionEnd = s - 4;
+    }
   }
 });
 
