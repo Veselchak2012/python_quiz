@@ -389,7 +389,7 @@ const TASKS = [
     testCases: [
       ["3"],
       ["11"],
-      ["99"]
+      ["10"]
     ],
     inputs: [
       { label: "n (дільник)", placeholder: "напр. 7" }
@@ -397,8 +397,8 @@ const TASKS = [
   },
   {
     id: 3,
-    title: "Написати програму, яка знаходить кількість усіх чисел від a до b, що закінчуються на 4, та виводить їх.",
-    hint: "Підказка: i % 10 == 4, лічильник count",
+    title: "Написати програму, яка виводить усі числа від a до b, що закінчуються на 4, а також їх кількість в кінці.",
+    hint: "Підказка: i % 10 == 4, спочатку виводь кожне число, потім print(count)",
     solution: [
       "a = int(input())",
       "b = int(input())",
@@ -565,6 +565,17 @@ function normalize(s) {
     .map(line => line.trimEnd())
     .join("\n")
     .trim();
+}
+
+// Для завдання 3: витягує всі числа з виводу, ігноруючи текст типу "Кількість: 3"
+// Це дозволяє учню писати print("Кількість:", count) або просто print(count)
+function normalizeNumbers(s) {
+  const nums = [];
+  for (const line of (s || "").trim().split("\n")) {
+    const found = line.match(/-?\d+/g);
+    if (found) nums.push(...found);
+  }
+  return nums.join("\n");
 }
 
 /* ================================================================
@@ -744,7 +755,12 @@ async function handleCheck(idx) {
       continue; // якщо еталон падає — пропускаємо цей тест
     }
 
-    if (studentOut !== expectedOut) {
+    // Порівнюємо лише числа для всіх завдань — формат виводу не важливий
+    // (print(i) і print(i, end=' ') обидва правильні)
+    const cmpA = normalizeNumbers(studentOut);
+    const cmpB = normalizeNumbers(expectedOut);
+
+    if (cmpA !== cmpB) {
       passed = false;
       const inStr = inputs.slice(0, 5).join(", ") + (inputs.length > 5 ? "…" : "");
       msg = `❌ Неправильний результат (тест ${t+1}, вхід: <code>${inStr}</code>)<br>`
