@@ -4,165 +4,111 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Python — Інтерактивний тест</title>
-
-  <!-- Pyodide: повноцінний Python у браузері через WebAssembly -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
-
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;900&family=JetBrains+Mono:wght@400;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
-
   <style>
-    /* ===== ТЕМНА ТЕМА (за замовчуванням) ===== */
+    /* ── ТЕМНА ТЕМА (default) ── */
     :root {
-      --bg:       #0d0f1a;
-      --surface:  #131629;
-      --card:     #181c30;
-      --border:   #252a45;
-      --accent:   #6c63ff;
-      --accent2:  #ff6b9d;
-      --green:    #3ddc97;
-      --red:      #ff5c78;
-      --yellow:   #e8b84b;
-      --text:     #e8eaf6;
-      --muted:    #7880a8;
-      --output-bg:#07090f;
-      --output-fg:#a8ffb8;
-      --orb1:     rgba(108,99,255,.18);
-      --orb2:     rgba(255,107,157,.14);
-      --grid-ln:  rgba(108,99,255,.06);
-      --mono:     'JetBrains Mono', monospace;
-      --sans:     'Nunito', sans-serif;
-      --display:  'Unbounded', sans-serif;
-      --radius:   14px;
-      --shadow:   0 8px 40px rgba(0,0,0,.45);
+      --bg:        #0d0f1a;
+      --surface:   #131629;
+      --card:      #181c30;
+      --border:    #252a45;
+      --accent:    #6c63ff;
+      --accent2:   #ff6b9d;
+      --green:     #3ddc97;
+      --red:       #ff5c78;
+      --yellow:    #e8b84b;
+      --text:      #e8eaf6;
+      --muted:     #7880a8;
+      --term-bg:   #07090f;
+      --term-ok:   #a8ffb8;
+      --grid-ln:   rgba(108,99,255,.06);
+      --orb1:      rgba(108,99,255,.18);
+      --orb2:      rgba(255,107,157,.14);
+      --shadow:    0 8px 40px rgba(0,0,0,.45);
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Nunito', sans-serif;
+      --disp: 'Unbounded', sans-serif;
+      --radius: 14px;
     }
-
-    /* ===== СВІТЛА ТЕМА ===== */
+    /* ── СВІТЛА ТЕМА ── */
     html.light {
-      --bg:       #f0f2fa;
-      --surface:  #ffffff;
-      --card:     #ffffff;
-      --border:   #d4d8ef;
-      --accent:   #5046e5;
-      --accent2:  #e8457a;
-      --green:    #1a9e65;
-      --red:      #d63550;
-      --yellow:   #b07d10;
-      --text:     #1a1d35;
-      --muted:    #6b72a0;
-      --output-bg:#1e1e2e;
-      --output-fg:#a8ffb8;
-      --orb1:     rgba(108,99,255,.10);
-      --orb2:     rgba(255,107,157,.08);
-      --grid-ln:  rgba(80,70,229,.05);
-      --shadow:   0 4px 24px rgba(80,70,229,.10);
+      --bg:        #f0f2fa;
+      --surface:   #ffffff;
+      --card:      #ffffff;
+      --border:    #d4d8ef;
+      --accent:    #5046e5;
+      --accent2:   #e8457a;
+      --green:     #1a9e65;
+      --red:       #d63550;
+      --yellow:    #b07d10;
+      --text:      #1a1d35;
+      --muted:     #6b72a0;
+      --term-bg:   #1e1e2e;
+      --term-ok:   #a8ffb8;
+      --grid-ln:   rgba(80,70,229,.05);
+      --orb1:      rgba(108,99,255,.10);
+      --orb2:      rgba(255,107,157,.08);
+      --shadow:    0 4px 24px rgba(80,70,229,.10);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Плавний перехід між темами */
-    html { transition: background .35s, color .35s; }
-    body, .task-card, .score-bar, .result-panel,
-    .output-box, .input-field, textarea, .feedback,
-    #pyodide-loader, .btn-reset {
-      transition:
-        background .35s, background-color .35s,
-        border-color .35s, color .35s, box-shadow .35s;
-    }
-
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      min-height: 100vh;
-      overflow-x: hidden;
+      background: var(--bg); color: var(--text);
+      font-family: var(--sans); min-height: 100vh; overflow-x: hidden;
+      transition: background .3s, color .3s;
     }
-
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
       background-image:
         linear-gradient(var(--grid-ln) 1px, transparent 1px),
         linear-gradient(90deg, var(--grid-ln) 1px, transparent 1px);
       background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
     }
-
-    .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; transition: background .35s; }
+    .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
     .orb-1 { width: 480px; height: 480px; background: var(--orb1); top: -120px; left: -140px; }
     .orb-2 { width: 360px; height: 360px; background: var(--orb2); bottom: 60px; right: -100px; }
 
-    /* ===== ПЕРЕМИКАЧ ТЕМИ ===== */
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 24px;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 6px 14px 6px 8px;
-      cursor: pointer;
-      font-family: var(--sans);
-      font-size: .82rem;
-      font-weight: 700;
-      color: var(--muted);
+    /* ── ПЕРЕМИКАЧ ТЕМИ ── */
+    .theme-btn {
+      position: fixed; top: 20px; right: 24px; z-index: 100;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 999px; padding: 6px 14px 6px 8px;
+      cursor: pointer; font-family: var(--sans); font-size: .82rem;
+      font-weight: 700; color: var(--muted);
       box-shadow: var(--shadow);
-      user-select: none;
-      transition: border-color .2s, color .2s, background .35s, box-shadow .35s;
+      transition: border-color .2s, color .2s, background .3s;
     }
-    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
-
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
     .toggle-track {
-      width: 36px; height: 20px;
-      background: var(--border);
-      border-radius: 999px;
-      position: relative;
-      transition: background .3s;
-      flex-shrink: 0;
+      width: 36px; height: 20px; background: var(--border);
+      border-radius: 999px; position: relative; transition: background .3s; flex-shrink: 0;
     }
     html.light .toggle-track { background: var(--accent); }
-
     .toggle-thumb {
-      position: absolute;
-      top: 3px; left: 3px;
-      width: 14px; height: 14px;
-      background: #fff;
-      border-radius: 50%;
+      position: absolute; top: 3px; left: 3px; width: 14px; height: 14px;
+      background: #fff; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,.3);
       transition: transform .3s cubic-bezier(.4,0,.2,1);
-      box-shadow: 0 1px 4px rgba(0,0,0,.3);
     }
     html.light .toggle-thumb { transform: translateX(16px); }
 
-    .toggle-label { white-space: nowrap; }
+    /* ── WRAPPER ── */
+    .wrapper { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 60px 20px 100px; }
 
-    .wrapper {
-      position: relative;
-      z-index: 1;
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 60px 20px 100px;
-    }
-
-    /* HEADER */
+    /* ── HEADER ── */
     header { text-align: center; margin-bottom: 48px; }
-    .header-badge {
+    .badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.3);
-      border-radius: 999px; padding: 6px 18px;
-      font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 20px; font-family: var(--mono);
+      border-radius: 999px; padding: 6px 18px; font-size: .78rem;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--accent);
+      margin-bottom: 20px; font-family: var(--mono);
     }
     h1 {
-      font-family: var(--display);
-      font-size: clamp(1.8rem, 5vw, 3rem);
-      line-height: 1.15;
+      font-family: var(--disp); font-size: clamp(1.8rem,5vw,3rem); line-height: 1.15;
       background: linear-gradient(135deg, #fff 30%, var(--accent));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       margin-bottom: 14px;
@@ -171,119 +117,80 @@
       background: linear-gradient(135deg, var(--text) 30%, var(--accent));
       -webkit-background-clip: text; background-clip: text;
     }
-    .subtitle {
-      color: var(--muted); font-size: 1rem;
-      max-width: 560px; margin: 0 auto; line-height: 1.6;
-    }
-    .subtitle code {
-      font-family: var(--mono); color: var(--accent);
-      background: rgba(108,99,255,.12); padding: 1px 6px; border-radius: 4px;
-    }
+    .subtitle { color: var(--muted); font-size: 1rem; max-width: 560px; margin: 0 auto; line-height: 1.6; }
+    .subtitle code { font-family: var(--mono); color: var(--accent); background: rgba(108,99,255,.12); padding: 1px 6px; border-radius: 4px; }
 
-    /* PYODIDE LOADER */
-    #pyodide-loader {
+    /* ── PYODIDE LOADER ── */
+    #loader {
       display: flex; align-items: center; justify-content: center; gap: 12px;
       background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.25);
-      border-radius: var(--radius); padding: 14px 24px;
-      margin-bottom: 32px; font-size: .9rem; color: var(--accent);
-      font-family: var(--mono);
+      border-radius: var(--radius); padding: 14px 24px; margin-bottom: 32px;
+      font-size: .9rem; color: var(--accent); font-family: var(--mono);
+      transition: background .3s, border-color .3s, color .3s;
     }
-    .loader-spinner {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(108,99,255,.3);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      flex-shrink: 0;
+    #loader.ready { background: rgba(61,220,151,.08); border-color: rgba(61,220,151,.25); color: var(--green); }
+    .spinner {
+      width: 18px; height: 18px; border: 2px solid rgba(108,99,255,.3);
+      border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0;
     }
+    #loader.ready .spinner { display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #pyodide-loader.ready {
-      background: rgba(61,220,151,.08);
-      border-color: rgba(61,220,151,.25);
-      color: var(--green);
-    }
-    #pyodide-loader.ready .loader-spinner { display: none; }
 
-    /* SCORE BAR */
+    /* ── SCORE BAR ── */
     .score-bar {
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 18px 28px; margin-bottom: 40px; flex-wrap: wrap;
+      transition: background .3s, border-color .3s;
     }
     .score-label { color: var(--muted); font-size: .88rem; }
-    .score-value {
-      font-family: var(--display); font-size: 1.6rem; color: var(--yellow);
-      transition: transform .25s;
-    }
+    .score-value { font-family: var(--disp); font-size: 1.6rem; color: var(--yellow); transition: transform .25s; }
     .score-value.bump { transform: scale(1.35); }
-    .progress-wrap { flex: 1; min-width: 160px; }
-    .progress-track { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
-    .progress-fill {
-      height: 100%; border-radius: 99px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      width: 0%; transition: width .5s cubic-bezier(.4,0,.2,1);
-    }
+    .prog-wrap { flex: 1; min-width: 160px; }
+    .prog-track { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+    .prog-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 0%; transition: width .5s cubic-bezier(.4,0,.2,1); }
 
-    /* CARDS */
+    /* ── CARDS ── */
     .cards-grid { display: grid; gap: 28px; }
-
     .task-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); overflow: hidden;
-      transition: border-color .3s, box-shadow .3s;
+      transition: border-color .3s, box-shadow .3s, background .3s;
       animation: slideUp .5s both;
     }
     .task-card:nth-child(1){animation-delay:.05s} .task-card:nth-child(2){animation-delay:.10s}
     .task-card:nth-child(3){animation-delay:.15s} .task-card:nth-child(4){animation-delay:.20s}
     .task-card:nth-child(5){animation-delay:.25s} .task-card:nth-child(6){animation-delay:.30s}
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes slideUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
 
     .task-card.correct { border-color: var(--green); box-shadow: 0 0 0 1px var(--green), var(--shadow); }
     .task-card.wrong   { border-color: var(--red);   box-shadow: 0 0 0 1px var(--red),   var(--shadow); }
-
-    .card-stripe { height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
-    .task-card.correct .card-stripe { background: var(--green); }
-    .task-card.wrong   .card-stripe { background: var(--red); }
+    .stripe { height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .task-card.correct .stripe { background: var(--green); }
+    .task-card.wrong   .stripe { background: var(--red); }
 
     .card-body { padding: 28px 28px 24px; }
-
     .task-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
     .task-num {
       flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px;
       background: rgba(108,99,255,.18); border: 1px solid rgba(108,99,255,.3);
       display: flex; align-items: center; justify-content: center;
-      font-family: var(--display); font-size: .8rem; color: var(--accent);
+      font-family: var(--disp); font-size: .8rem; color: var(--accent);
     }
-    .task-title { font-size: 1rem; font-weight: 700; line-height: 1.5; color: var(--text); }
+    .task-title { font-size: 1rem; font-weight: 700; line-height: 1.5; }
     .task-hint  { margin-top: 6px; font-size: .82rem; color: var(--muted); font-family: var(--mono); }
 
-    /* CODE TEXTAREA */
+    /* ── CODE EDITOR ── */
     textarea.code-area {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: .9rem;
-      line-height: 1.7;
-      padding: 14px 16px;
-      resize: vertical;
-      min-height: 150px;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-      tab-size: 4;
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-family: var(--mono);
+      font-size: .9rem; line-height: 1.7; padding: 14px 16px;
+      resize: vertical; min-height: 150px; outline: none; tab-size: 4;
+      transition: border-color .2s, box-shadow .2s, background .3s;
     }
-    textarea.code-area:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(108,99,255,.18);
-    }
+    textarea.code-area:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,.18); }
 
-    /* INPUT FIELDS для тестових даних */
+    /* ── INPUT FIELDS ── */
     .inputs-section { margin-top: 14px; }
     .inputs-label {
       font-size: .78rem; color: var(--muted); font-family: var(--mono);
@@ -291,256 +198,199 @@
     }
     .inputs-label::before { content: '▸'; color: var(--accent); }
     .inputs-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-    .input-field-wrap { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 120px; max-width: 200px; }
-    .input-field-label { font-size: .72rem; color: var(--muted); font-family: var(--mono); }
-    .input-field {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: .88rem;
-      padding: 8px 12px;
-      outline: none;
-      width: 100%;
-      transition: border-color .2s, box-shadow .2s;
+    .inp-wrap { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 120px; max-width: 200px; }
+    .inp-label { font-size: .72rem; color: var(--muted); font-family: var(--mono); }
+    .inp-field {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: var(--mono); font-size: .88rem;
+      padding: 8px 12px; outline: none; width: 100%;
+      transition: border-color .2s, box-shadow .2s, background .3s;
     }
-    .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(108,99,255,.18); }
-    textarea.input-field { resize: vertical; min-height: 56px; line-height: 1.5; }
+    .inp-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(108,99,255,.18); }
+    textarea.inp-field { resize: vertical; min-height: 56px; line-height: 1.5; }
 
-    /* BUTTONS */
+    /* ── BUTTONS ── */
     .btn-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-
     .btn-run {
       display: inline-flex; align-items: center; gap: 7px;
       background: rgba(61,220,151,.1); border: 1px solid rgba(61,220,151,.25);
-      border-radius: 10px; color: var(--green);
-      cursor: pointer; font-family: var(--sans); font-size: .88rem; font-weight: 700;
-      padding: 10px 18px;
+      border-radius: 10px; color: var(--green); cursor: pointer;
+      font-family: var(--sans); font-size: .88rem; font-weight: 700; padding: 10px 18px;
       transition: background .2s, transform .15s;
     }
     .btn-run:hover:not(:disabled) { background: rgba(61,220,151,.2); transform: translateY(-1px); }
-    .btn-run:active { transform: translateY(0); }
-    .btn-run:disabled { opacity: .35; cursor: not-allowed; transform: none; }
-
+    .btn-run:disabled { opacity: .35; cursor: not-allowed; }
     .btn-check {
       display: inline-flex; align-items: center; gap: 7px;
       background: linear-gradient(135deg, var(--accent), #8b85ff);
-      border: none; border-radius: 10px; color: #fff;
-      cursor: pointer; font-family: var(--sans); font-size: .88rem; font-weight: 700;
-      padding: 10px 20px;
+      border: none; border-radius: 10px; color: #fff; cursor: pointer;
+      font-family: var(--sans); font-size: .88rem; font-weight: 700; padding: 10px 20px;
       transition: opacity .2s, transform .15s;
     }
     .btn-check:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
-    .btn-check:active { transform: translateY(0); }
-    .btn-check:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+    .btn-check:disabled { opacity: .4; cursor: not-allowed; }
 
-    /* OUTPUT BOX */
-    .output-box {
-      margin-top: 16px;
-      background: var(--output-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      display: none;
-      animation: fadeIn .25s;
-    }
-    .output-box.show { display: block; }
-
+    /* ── OUTPUT TERMINAL ── */
+    .output-box { margin-top: 16px; background: var(--term-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: none; }
+    .output-box.show { display: block; animation: fadeIn .25s; }
     .output-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 9px 14px;
-      background: rgba(255,255,255,.025);
-      border-bottom: 1px solid var(--border);
-      font-size: .75rem;
-      font-family: var(--mono);
-      color: var(--muted);
+      padding: 9px 14px; background: rgba(255,255,255,.03);
+      border-bottom: 1px solid var(--border); font-size: .75rem;
+      font-family: var(--mono); color: var(--muted);
     }
-    .dot-row { display: flex; gap: 5px; }
-    .output-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
-
-    .output-title-tag {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 2px 10px; border-radius: 999px;
-      background: rgba(255,255,255,.06);
-    }
-
+    .dots { display: flex; gap: 5px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r{background:#ff5f57} .dot-y{background:#febc2e} .dot-g{background:#28c840}
+    .out-tag { padding: 2px 10px; border-radius: 999px; background: rgba(255,255,255,.06); }
     .output-content {
-      padding: 14px 18px;
-      font-family: var(--mono);
-      font-size: .9rem;
-      line-height: 1.75;
-      white-space: pre-wrap;
-      word-break: break-all;
-      max-height: 240px;
-      overflow-y: auto;
-      color: var(--output-fg);
+      padding: 14px 18px; font-family: var(--mono); font-size: .9rem;
+      line-height: 1.75; white-space: pre-wrap; word-break: break-all;
+      max-height: 240px; overflow-y: auto; color: var(--term-ok);
     }
-    .output-content.has-error { color: #ff8099; }
+    .output-content.err { color: #ff8099; }
     .output-content::-webkit-scrollbar { width: 5px; }
     .output-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-    .output-header.running .output-title-tag { color: var(--accent); }
-    @keyframes ellipsis {
-      0%   { content: '▷  виконується.'; }
-      33%  { content: '▷  виконується..'; }
-      66%  { content: '▷  виконується...'; }
-    }
-    .output-header.running .output-title-tag::after {
-      animation: ellipsis 1s steps(1) infinite;
-    }
-
-    /* FEEDBACK */
+    /* ── FEEDBACK ── */
     .feedback {
       margin-top: 14px; border-radius: 10px; padding: 12px 16px;
-      font-size: .88rem; font-weight: 600;
-      display: none; align-items: flex-start; gap: 10px;
-      animation: fadeIn .3s;
+      font-size: .88rem; font-weight: 600; display: none;
+      align-items: flex-start; gap: 10px; animation: fadeIn .3s;
+      line-height: 1.55;
     }
     .feedback.show { display: flex; }
-    .feedback.ok { background: rgba(61,220,151,.12); border: 1px solid rgba(61,220,151,.3); color: var(--green); }
-    .feedback.err{ background: rgba(255,92,120,.12);  border: 1px solid rgba(255,92,120,.3);  color: var(--red); }
-    .feedback-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
-    .feedback-text { line-height: 1.5; }
-    .feedback-solution {
-      margin-top: 8px; font-family: var(--mono); font-size: .82rem;
-      color: var(--muted); white-space: pre-wrap;
-    }
+    .feedback.ok  { background: rgba(61,220,151,.12); border: 1px solid rgba(61,220,151,.3); color: var(--green); }
+    .feedback.bad { background: rgba(255,92,120,.12);  border: 1px solid rgba(255,92,120,.3);  color: var(--red); }
+    .fb-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ACTION ROW */
+    /* ── ACTION ROW ── */
     .action-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 44px; }
-    .btn-all {
-      padding: 14px 32px; border-radius: 12px;
-      font-family: var(--display); font-size: .82rem;
-      cursor: pointer; border: none;
-      transition: opacity .2s, transform .15s;
+    .btn-big {
+      padding: 14px 32px; border-radius: 12px; font-family: var(--disp); font-size: .82rem;
+      cursor: pointer; border: none; transition: opacity .2s, transform .15s;
     }
-    .btn-all:hover { opacity: .88; transform: translateY(-2px); }
-    .btn-all:active { transform: translateY(0); }
-    .btn-check-all { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
-    .btn-reset {
-      background: transparent;
-      border: 1px solid var(--border) !important;
-      color: var(--muted);
-    }
-    .btn-reset:hover { border-color: var(--red) !important; color: var(--red); }
+    .btn-big:hover { opacity: .88; transform: translateY(-2px); }
+    .btn-big.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+    .btn-big.secondary { background: transparent; border: 1px solid var(--border) !important; color: var(--muted); }
+    .btn-big.secondary:hover { border-color: var(--red) !important; color: var(--red); }
 
-    /* RESULT PANEL */
+    /* ── RESULT PANEL ── */
     .result-panel {
-      display: none; text-align: center;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 40px 28px; margin-top: 40px;
-      animation: fadeIn .4s;
+      display: none; text-align: center; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 40px 28px; margin-top: 40px; animation: fadeIn .4s;
+      transition: background .3s, border-color .3s;
     }
     .result-panel.show { display: block; }
-    .result-emoji  { font-size: 3rem; margin-bottom: 16px; }
-    .result-headline { font-family: var(--display); font-size: clamp(1.4rem,4vw,2rem); margin-bottom: 10px; }
-    .result-sub    { color: var(--muted); font-size: .95rem; }
+    .result-emoji    { font-size: 3rem; margin-bottom: 16px; }
+    .result-headline { font-family: var(--disp); font-size: clamp(1.4rem,4vw,2rem); margin-bottom: 10px; }
+    .result-sub      { color: var(--muted); font-size: .95rem; }
+
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
     @media (max-width: 600px) {
       .card-body { padding: 20px 16px; }
-      h1 { font-size: 1.6rem; }
-      .input-field-wrap { max-width: 100%; }
+      .inp-wrap { max-width: 100%; }
     }
   </style>
 </head>
 <body>
 
 <!-- Перемикач теми -->
-<button class="theme-toggle" onclick="toggleTheme()" title="Перемкнути тему">
+<button class="theme-btn" onclick="toggleTheme()">
   <div class="toggle-track"><div class="toggle-thumb"></div></div>
-  <span class="toggle-label" id="toggleLabel">☀️ Світла</span>
+  <span id="theme-label">☀️ Світла</span>
 </button>
 
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 
 <div class="wrapper">
-
   <header>
-    <div class="header-badge">🐍 Python · Цикли та умови</div>
+    <div class="badge">🐍 Python · Цикли та умови</div>
     <h1>Інтерактивний тест</h1>
     <p class="subtitle">
-      Введи код Python, вкажи тестові дані для <code>input()</code>,
-      натисни <strong>Запустити</strong> — побачиш реальний вивід програми.
+      Введи код Python, вкажи дані для <code>input()</code>,
+      натисни <strong>Запустити</strong> — побачиш реальний вивід.
       Потім натисни <strong>Перевірити</strong>.
     </p>
   </header>
 
-  <!-- Індикатор завантаження Pyodide -->
-  <div id="pyodide-loader">
-    <div class="loader-spinner"></div>
-    <span id="pyodide-status">Завантаження Python (Pyodide)… зачекай кілька секунд</span>
+  <div id="loader">
+    <div class="spinner"></div>
+    <span id="loader-text">Завантаження Python (Pyodide)… зачекай кілька секунд</span>
   </div>
 
   <div class="score-bar">
     <div>
       <div class="score-label">Поточний бал</div>
-      <div class="score-value" id="scoreDisplay">0 / 12</div>
+      <div class="score-value" id="score-display">0 / 12</div>
     </div>
-    <div class="progress-wrap">
-      <div class="score-label" style="margin-bottom:8px">Прогрес</div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
+    <div class="prog-wrap">
+      <div class="score-label">Прогрес</div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
     </div>
   </div>
 
-  <div class="cards-grid" id="cardsGrid"></div>
+  <div class="cards-grid" id="cards-grid"></div>
 
   <div class="action-row">
-    <button class="btn-all btn-check-all" onclick="checkAll()">⚡ Перевірити всі завдання</button>
-    <button class="btn-all btn-reset"     onclick="resetAll()">↺ Скинути результати</button>
+    <button class="btn-big primary"    onclick="checkAll()">⚡ Перевірити всі завдання</button>
+    <button class="btn-big secondary"  onclick="resetAll()">↺ Скинути результати</button>
   </div>
 
-  <div class="result-panel" id="resultPanel">
-    <div class="result-emoji"    id="resultEmoji"></div>
-    <div class="result-headline" id="resultHeadline"></div>
-    <div class="result-sub"      id="resultSub"></div>
+  <div class="result-panel" id="result-panel">
+    <div class="result-emoji"    id="result-emoji"></div>
+    <div class="result-headline" id="result-headline"></div>
+    <div class="result-sub"      id="result-sub"></div>
   </div>
-
 </div>
 
 <script>
 /* ================================================================
-   ЗАВДАННЯ
-   inputs: масив { label, placeholder, multiline? }
-           відповідають послідовним викликам input() у коді
-   Для завдання 6: особливий режим — перше поле = n,
-   друге = всі числа через пробіл (розбиваємо автоматично)
-   ================================================================ */
+  ЗАВДАННЯ
+  solution   — еталонний код для порівняння виводу
+  testCases  — масив масивів рядків: кожен = послідовні значення input()
+  inputs     — поля UI для введення тестових даних вручну
+  multiInput — true для завдання 6 (n + числа через пробіл)
+================================================================ */
 const TASKS = [
   {
     id: 1,
-    title: "Написати програму, яка виведе всі числа від a до b в рядок. (дані a і b вводяться з клавіатури)",
-    hint: "Підказка: input(), range(), print(..., end=' ')",
-    solution:
-`a = int(input())
-b = int(input())
-for i in range(a, b + 1):
-    print(i, end=' ')`,
-    keywords: [["for"], ["range"], ["print"], ["input"]],
+    title: "Написати програму, яка виведе всі числа від a до b включно в рядок. (a і b вводяться з клавіатури)",
+    hint: "Підказка: input(), range(a, b+1) — щоб включити b, print(i, end=' ')",
+    solution: [
+      "a = int(input())",
+      "b = int(input())",
+      "for i in range(a, b + 1):",
+      "    print(i, end=' ')"
+    ].join("\n"),
+    testCases: [
+      ["1", "5"],
+      ["3", "7"],
+      ["1", "2"]
+    ],
     inputs: [
       { label: "a (початок)", placeholder: "напр. 1" },
-      { label: "b (кінець)",  placeholder: "напр. 10" }
+      { label: "b (кінець)",  placeholder: "напр. 5" }
     ]
   },
   {
     id: 2,
     title: "Написати програму, яка виведе всі двоцифрові числа, що кратні числу n.",
-    hint: "Підказка: range(10, 100), % (остача від ділення)",
-    solution:
-`n = int(input())
-for i in range(10, 100):
-    if i % n == 0:
-        print(i)`,
-    keywords: [["for"], ["range"], ["%"], ["print"]],
+    hint: "Підказка: range(10, 100), перевірка i % n == 0",
+    solution: [
+      "n = int(input())",
+      "for i in range(10, 100):",
+      "    if i % n == 0:",
+      "        print(i)"
+    ].join("\n"),
+    testCases: [
+      ["3"],
+      ["11"],
+      ["99"]
+    ],
     inputs: [
       { label: "n (дільник)", placeholder: "напр. 7" }
     ]
@@ -548,17 +398,22 @@ for i in range(10, 100):
   {
     id: 3,
     title: "Написати програму, яка знаходить кількість усіх чисел від a до b, що закінчуються на 4, та виводить їх.",
-    hint: "Підказка: % 10 == 4, лічильник count",
-    solution:
-`a = int(input())
-b = int(input())
-count = 0
-for i in range(a, b + 1):
-    if i % 10 == 4:
-        print(i)
-        count += 1
-print("Кількість:", count)`,
-    keywords: [["for"],["% 10 == 4","% 10==4","%10==4","%10 == 4"],["count"],["print"]],
+    hint: "Підказка: i % 10 == 4, лічильник count",
+    solution: [
+      "a = int(input())",
+      "b = int(input())",
+      "count = 0",
+      "for i in range(a, b + 1):",
+      "    if i % 10 == 4:",
+      "        print(i)",
+      "        count += 1",
+      "print(count)"
+    ].join("\n"),
+    testCases: [
+      ["4",  "24"],
+      ["1",  "4"],
+      ["14", "14"]
+    ],
     inputs: [
       { label: "a (початок)", placeholder: "напр. 1" },
       { label: "b (кінець)",  placeholder: "напр. 50" }
@@ -567,29 +422,39 @@ print("Кількість:", count)`,
   {
     id: 4,
     title: "Написати програму, яка всі парні числа від 0 до n збільшує вдвічі, а непарні підносить до квадрату.",
-    hint: "Підказка: % 2 == 0 → * 2, else → ** 2",
-    solution:
-`n = int(input())
-for i in range(n + 1):
-    if i % 2 == 0:
-        print(i * 2)
-    else:
-        print(i ** 2)`,
-    keywords: [["for"],["% 2 == 0","%2==0"],["* 2","*2"],["** 2","**2"]],
+    hint: "Підказка: if i % 2 == 0: print(i * 2) else: print(i ** 2)",
+    solution: [
+      "n = int(input())",
+      "for i in range(n + 1):",
+      "    if i % 2 == 0:",
+      "        print(i * 2)",
+      "    else:",
+      "        print(i ** 2)"
+    ].join("\n"),
+    testCases: [
+      ["5"],
+      ["8"],
+      ["1"]
+    ],
     inputs: [
-      { label: "n (до якого числа)", placeholder: "напр. 8" }
+      { label: "n (до якого числа)", placeholder: "напр. 5" }
     ]
   },
   {
     id: 5,
     title: "Користувач вводить число. Написати програму, яка виводить усі дільники цього числа.",
-    hint: "Підказка: перевіряй n % i == 0 для i від 1 до n",
-    solution:
-`n = int(input())
-for i in range(1, n + 1):
-    if n % i == 0:
-        print(i)`,
-    keywords: [["for"],["range"],["% i == 0","%i==0","n % i","n%i"],["print"]],
+    hint: "Підказка: перевіряй n % i == 0 для i від 1 до n включно",
+    solution: [
+      "n = int(input())",
+      "for i in range(1, n + 1):",
+      "    if n % i == 0:",
+      "        print(i)"
+    ].join("\n"),
+    testCases: [
+      ["12"],
+      ["7"],
+      ["36"]
+    ],
     inputs: [
       { label: "n (число)", placeholder: "напр. 12" }
     ]
@@ -597,88 +462,163 @@ for i in range(1, n + 1):
   {
     id: 6,
     title: "Користувач вводить n чисел. Потрібно знайти найбільше число.",
-    hint: "Підказка: max = numbers[0], порівнюй у циклі, або вбудована max()",
-    solution:
-`n = int(input())
-numbers = []
-for i in range(n):
-    numbers.append(int(input()))
-print(max(numbers))`,
-    keywords: [["for"],["input"],["max","if num >","if num>"]],
-    // Особливий режим: поле 0 = n, поле 1 = числа через пробіл
+    hint: "Підказка: збери числа у список, використай max() або порівняння у циклі",
+    solution: [
+      "n = int(input())",
+      "numbers = []",
+      "for i in range(n):",
+      "    numbers.append(int(input()))",
+      "print(max(numbers))"
+    ].join("\n"),
+    testCases: [
+      ["5", "3", "17", "5", "9", "1"],
+      ["3", "100", "2", "50"],
+      ["4", "-5", "-1", "-20", "-3"]
+    ],
     inputs: [
       { label: "n (кількість чисел)", placeholder: "напр. 5" },
       { label: "числа через пробіл",  placeholder: "напр. 3 17 5 9 1", multiline: true }
     ],
-    multiInput: true  // флаг для особливої обробки
+    multiInput: true
   }
 ];
 
 /* ================================================================
-   СТАН
-   ================================================================ */
+  СТАН
+================================================================ */
 const state = {
-  scores:  new Array(TASKS.length).fill(0),
-  checked: new Array(TASKS.length).fill(false)
+  scores:  Array(TASKS.length).fill(0),
+  checked: Array(TASKS.length).fill(false)
 };
 
 /* ================================================================
-   PYODIDE
-   ================================================================ */
+  PYODIDE
+================================================================ */
 let pyodide = null;
 
-async function initPyodide() {
+(async () => {
   try {
     pyodide = await loadPyodide();
-    const loader = document.getElementById("pyodide-loader");
-    loader.classList.add("ready");
-    document.getElementById("pyodide-status").textContent = "✓ Python готовий до роботи";
+    const el = document.getElementById("loader");
+    el.classList.add("ready");
+    document.getElementById("loader-text").textContent = "✓ Python готовий до роботи";
     document.querySelectorAll(".btn-run").forEach(b => b.disabled = false);
-  } catch (e) {
-    document.getElementById("pyodide-status").textContent =
-      "⚠️ Не вдалося завантажити Python. Перевір підключення до інтернету.";
+  } catch(e) {
+    document.getElementById("loader-text").textContent = "⚠️ Не вдалося завантажити Python. Перевір інтернет-з'єднання.";
   }
-}
-
-initPyodide();
+})();
 
 /* ================================================================
-   РЕНДЕР КАРТОК
-   ================================================================ */
+  ЯДРО: запустити Python-код з підміненим input() та захопленим stdout
+
+  Принцип:
+    - exec(userCode, namespace) де namespace['input'] = fake_input
+    - fake_input() повертає значення з черги inputLines по черзі
+    - stdout перехоплюється через io.StringIO
+
+  Важливо: код передається через pyodide.globals, а не через
+  рядок-шаблон — це єдиний безпечний спосіб уникнути проблем
+  з лапками, відступами та спецсимволами в коді учня.
+================================================================ */
+function runPython(userCode, inputLines) {
+  // Передаємо дані через pyodide.globals — без жодної інтерполяції рядків
+  pyodide.globals.set("_user_code",   userCode);
+  pyodide.globals.set("_input_queue", pyodide.toPy(inputLines));
+
+  const runner = `
+import sys, io, builtins
+
+_qi = [0]
+_orig_input = builtins.input
+
+def _fake_input(prompt=""):
+    if _qi[0] < len(_input_queue):
+        val = _input_queue[_qi[0]]
+        _qi[0] += 1
+        return val
+    return ""
+
+_buf = io.StringIO()
+_old_stdout = sys.stdout
+sys.stdout  = _buf
+builtins.input = _fake_input
+
+try:
+    exec(_user_code, {"input": _fake_input})
+finally:
+    sys.stdout     = _old_stdout
+    builtins.input = _orig_input
+
+_buf.getvalue()
+`;
+
+  return pyodide.runPythonAsync(runner);
+}
+
+/* ================================================================
+  НОРМАЛІЗАЦІЯ виводу для порівняння:
+  прибираємо пробіли в кінці кожного рядка і зайвий перенос в кінці
+================================================================ */
+function normalize(s) {
+  return (s || "")
+    .split("\n")
+    .map(line => line.trimEnd())
+    .join("\n")
+    .trim();
+}
+
+/* ================================================================
+  ОТРИМАТИ ЗНАЧЕННЯ input() З ПОЛІВ UI
+================================================================ */
+function getInputValues(idx) {
+  const task = TASKS[idx];
+  if (!task.inputs || task.inputs.length === 0) return [];
+
+  if (task.multiInput) {
+    // Завдання 6: перше поле = n, друге = числа через пробіл/кому
+    const n    = (document.getElementById(`inp-${idx}-0`)?.value || "").trim();
+    const nums = (document.getElementById(`inp-${idx}-1`)?.value || "").trim()
+                   .split(/[\s,]+/).filter(Boolean);
+    return [n, ...nums];
+  }
+
+  return task.inputs.map((_, i) =>
+    (document.getElementById(`inp-${idx}-${i}`)?.value || "").trim()
+  );
+}
+
+/* ================================================================
+  РЕНДЕР КАРТОК
+================================================================ */
 function renderCards() {
-  const grid = document.getElementById("cardsGrid");
+  const grid = document.getElementById("cards-grid");
   grid.innerHTML = "";
 
   TASKS.forEach((task, idx) => {
-
     // Поля для тестових даних
     let inputsHTML = "";
-    if (task.inputs && task.inputs.length > 0) {
+    if (task.inputs?.length > 0) {
       const fieldsHTML = task.inputs.map((inp, i) => `
-        <div class="input-field-wrap">
-          <span class="input-field-label">${inp.label}</span>
+        <div class="inp-wrap">
+          <span class="inp-label">${inp.label}</span>
           ${inp.multiline
-            ? `<textarea class="input-field" id="inp-${idx}-${i}" placeholder="${inp.placeholder}" rows="2"></textarea>`
-            : `<input class="input-field" type="text" id="inp-${idx}-${i}" placeholder="${inp.placeholder}" />`
+            ? `<textarea class="inp-field" id="inp-${idx}-${i}" placeholder="${inp.placeholder}" rows="2"></textarea>`
+            : `<input class="inp-field" type="text" id="inp-${idx}-${i}" placeholder="${inp.placeholder}" />`
           }
-        </div>
-      `).join("");
-
+        </div>`).join("");
       inputsHTML = `
         <div class="inputs-section">
           <div class="inputs-label">Тестові дані для input()</div>
           <div class="inputs-grid">${fieldsHTML}</div>
-        </div>
-      `;
+        </div>`;
     }
 
     const card = document.createElement("div");
     card.className = "task-card";
     card.id = `card-${idx}`;
     card.innerHTML = `
-      <div class="card-stripe"></div>
+      <div class="stripe"></div>
       <div class="card-body">
-
         <div class="task-header">
           <div class="task-num">0${task.id}</div>
           <div>
@@ -687,292 +627,270 @@ function renderCards() {
           </div>
         </div>
 
-        <textarea class="code-area" id="answer-${idx}"
+        <textarea class="code-area" id="code-${idx}"
           placeholder="# Введи сюди свій код Python..."
           spellcheck="false"></textarea>
 
         ${inputsHTML}
 
         <div class="btn-row">
-          <button class="btn-run" id="btn-run-${idx}" onclick="runCode(${idx})" disabled>
+          <button class="btn-run" id="btn-run-${idx}" onclick="handleRun(${idx})" disabled>
             ▷ Запустити
           </button>
-          <button class="btn-check" id="btn-check-${idx}" onclick="checkOne(${idx})">
+          <button class="btn-check" id="btn-check-${idx}" onclick="handleCheck(${idx})">
             ✓ Перевірити
           </button>
         </div>
 
-        <!-- Вивід результату виконання програми -->
-        <div class="output-box" id="output-box-${idx}">
-          <div class="output-header" id="output-header-${idx}">
-            <div class="dot-row">
-              <div class="output-dot dot-r"></div>
-              <div class="output-dot dot-y"></div>
-              <div class="output-dot dot-g"></div>
+        <div class="output-box" id="out-box-${idx}">
+          <div class="output-header">
+            <div class="dots">
+              <div class="dot dot-r"></div>
+              <div class="dot dot-y"></div>
+              <div class="dot dot-g"></div>
             </div>
-            <div class="output-title-tag" id="output-title-${idx}">вивід програми</div>
+            <div class="out-tag" id="out-tag-${idx}">вивід програми</div>
           </div>
-          <div class="output-content" id="output-content-${idx}"></div>
+          <div class="output-content" id="out-content-${idx}"></div>
         </div>
 
-        <!-- Результат перевірки -->
         <div class="feedback" id="feedback-${idx}">
-          <span class="feedback-icon"></span>
-          <div class="feedback-text">
-            <span class="msg"></span>
-            <div class="feedback-solution"></div>
-          </div>
+          <span class="fb-icon"></span>
+          <div class="fb-text"></div>
         </div>
+      </div>`;
 
-      </div>
-    `;
     grid.appendChild(card);
   });
 }
 
 /* ================================================================
-   ЗІБРАТИ ЗНАЧЕННЯ input() З ПОЛІВ
-   Повертає масив рядків — кожен рядок = один виклик input()
-   ================================================================ */
-function getInputValues(idx) {
-  const task = TASKS[idx];
-  if (!task.inputs || task.inputs.length === 0) return [];
+  КНОПКА «ЗАПУСТИТИ» — показує реальний вивід програми
+================================================================ */
+async function handleRun(idx) {
+  if (!pyodide) { alert("Python ще завантажується..."); return; }
 
-  if (task.multiInput) {
-    // Завдання 6: n + числа через пробіл → розбиваємо на окремі рядки
-    const nVal    = (document.getElementById(`inp-${idx}-0`)?.value || "5").trim();
-    const numsRaw = (document.getElementById(`inp-${idx}-1`)?.value || "").trim();
-    const nums    = numsRaw.split(/[\s,]+/).filter(Boolean);
-    return [nVal, ...nums];
-  }
-
-  return task.inputs.map((_, i) => {
-    const el = document.getElementById(`inp-${idx}-${i}`);
-    return el ? el.value.trim() : "";
-  });
-}
-
-/* ================================================================
-   ЗАПУСТИТИ КОД ЧЕРЕЗ PYODIDE
-   ================================================================ */
-async function runCode(idx) {
-  if (!pyodide) { alert("Python ще завантажується, зачекай..."); return; }
-
-  const code       = document.getElementById(`answer-${idx}`).value;
-  const inputLines = getInputValues(idx);
-  const outputBox  = document.getElementById(`output-box-${idx}`);
-  const outputEl   = document.getElementById(`output-content-${idx}`);
-  const headerEl   = document.getElementById(`output-header-${idx}`);
-  const titleEl    = document.getElementById(`output-title-${idx}`);
-  const btnRun     = document.getElementById(`btn-run-${idx}`);
+  const code   = document.getElementById(`code-${idx}`).value;
+  const inputs = getInputValues(idx);
+  const box    = document.getElementById(`out-box-${idx}`);
+  const content= document.getElementById(`out-content-${idx}`);
+  const tag    = document.getElementById(`out-tag-${idx}`);
+  const btn    = document.getElementById(`btn-run-${idx}`);
 
   if (!code.trim()) {
-    outputBox.classList.add("show");
-    outputEl.className = "output-content has-error";
-    outputEl.textContent = "⚠️ Код порожній. Введи програму.";
+    box.classList.add("show");
+    content.className = "output-content err";
+    content.textContent = "⚠️ Код порожній.";
     return;
   }
 
-  // Показуємо анімацію "виконується"
-  outputBox.classList.add("show");
-  outputEl.className = "output-content";
-  outputEl.textContent = "";
-  headerEl.classList.add("running");
-  titleEl.textContent = "";  // текст показується через CSS ::after
-  btnRun.disabled = true;
+  box.classList.add("show");
+  content.className = "output-content";
+  content.textContent = "";
+  tag.textContent = "виконується…";
+  btn.disabled = true;
 
   try {
-    /*
-      Обгортаємо код учня:
-      1. Підміняємо input() — повертає значення з нашої черги
-      2. Перехоплюємо stdout через io.StringIO
-      3. Повертаємо зібраний вивід
-    */
-    const inputJson = JSON.stringify(inputLines);
-
-    const wrapper = `
-import sys, io, json as _json
-
-_queue = _json.loads(${JSON.stringify(inputJson)})
-_qi = [0]
-
-def input(prompt=""):
-    if _qi[0] < len(_queue):
-        v = _queue[_qi[0]]; _qi[0] += 1; return v
-    return ""
-
-_buf = io.StringIO()
-sys.stdout = _buf
-
-# ---- КОД УЧНЯ ----
-${code}
-# ---- КІНЕЦЬ КОДУ ----
-
-sys.stdout = sys.__stdout__
-_buf.getvalue()
-`;
-
-    const result = await pyodide.runPythonAsync(wrapper);
-
-    headerEl.classList.remove("running");
-    titleEl.textContent = "вивід програми";
-
-    const output = (result || "").trimEnd();
-    outputEl.className = "output-content";
-    outputEl.textContent = output === "" ? "(програма нічого не вивела)" : output;
-
-  } catch (err) {
-    headerEl.classList.remove("running");
-    titleEl.textContent = "помилка виконання";
-    outputEl.className = "output-content has-error";
-
-    // Очищаємо повідомлення від внутрішніх деталей обгортки
-    const msg = (err.message || String(err))
-      .split("\n")
-      .filter(l => !l.includes("_queue") && !l.includes("_buf") && !l.includes("_qi"))
-      .join("\n")
-      .trim();
-
-    outputEl.textContent = "🔴 Помилка:\n" + msg;
+    const result = await runPython(code, inputs);
+    tag.textContent = "вивід програми";
+    content.className = "output-content";
+    content.textContent = (result || "").trimEnd() || "(програма нічого не вивела)";
+  } catch(err) {
+    tag.textContent = "помилка виконання";
+    content.className = "output-content err";
+    content.textContent = "🔴 Помилка:\n" + cleanError(err);
   }
 
-  btnRun.disabled = false;
+  btn.disabled = false;
 }
 
 /* ================================================================
-   ПЕРЕВІРКА КЛЮЧОВИХ СЛІВ
-   ================================================================ */
-function checkOne(idx) {
-  const task   = TASKS[idx];
-  const answer = document.getElementById(`answer-${idx}`).value.trim();
-  const card   = document.getElementById(`card-${idx}`);
-  const btn    = document.getElementById(`btn-check-${idx}`);
+  КНОПКА «ПЕРЕВІРИТИ» — порівнює вивід з еталоном на 3 тестах
+================================================================ */
+async function handleCheck(idx) {
+  if (!pyodide) { showFeedback(idx, false, "⚠️ Python ще завантажується, зачекай."); return; }
 
-  if (!answer) {
-    showFeedback(idx, false, "⚠️ Будь ласка, введи код перед перевіркою.", "");
-    return;
+  const code = document.getElementById(`code-${idx}`).value.trim();
+  const btn  = document.getElementById(`btn-check-${idx}`);
+
+  if (!code) { showFeedback(idx, false, "⚠️ Введи код перед перевіркою."); return; }
+
+  btn.disabled = true;
+  btn.textContent = "⏳ Перевіряю…";
+
+  const task = TASKS[idx];
+  let passed = true;
+  let msg    = "";
+
+  for (let t = 0; t < task.testCases.length; t++) {
+    const inputs = task.testCases[t];
+
+    // Запускаємо код учня
+    let studentOut;
+    try {
+      studentOut = normalize(await runPython(code, inputs));
+    } catch(err) {
+      passed = false;
+      msg = `🔴 Помилка виконання (тест ${t+1}):<br>`
+          + `<span style="font-size:.82rem;font-weight:400;color:var(--muted)">${cleanError(err).replace(/\n/g,"<br>")}</span>`;
+      break;
+    }
+
+    // Запускаємо еталон
+    let expectedOut;
+    try {
+      expectedOut = normalize(await runPython(task.solution, inputs));
+    } catch(e) {
+      continue; // якщо еталон падає — пропускаємо цей тест
+    }
+
+    if (studentOut !== expectedOut) {
+      passed = false;
+      const inStr = inputs.slice(0, 5).join(", ") + (inputs.length > 5 ? "…" : "");
+      msg = `❌ Неправильний результат (тест ${t+1}, вхід: <code>${inStr}</code>)<br>`
+          + `<span style="font-size:.84rem;font-weight:400">`
+          + `Твій вивід:&nbsp;&nbsp;&nbsp;<code style="color:var(--red)">${escHtml(studentOut) || "(порожньо)"}</code><br>`
+          + `Очікувалось:&nbsp;<code style="color:var(--green)">${escHtml(expectedOut) || "(порожньо)"}</code>`
+          + `</span>`;
+      break;
+    }
   }
 
-  const al = answer.toLowerCase().replace(/\s+/g, " ");
-  const ok = task.keywords.every(group =>
-    group.some(kw => al.includes(kw.toLowerCase()))
-  );
-
-  state.scores[idx] = ok ? 2 : 0;
+  // Оновлюємо картку
+  const card = document.getElementById(`card-${idx}`);
   card.classList.remove("correct", "wrong");
-  card.classList.add(ok ? "correct" : "wrong");
 
-  if (ok) {
+  if (passed) {
+    state.scores[idx]  = 2;
     state.checked[idx] = true;
+    card.classList.add("correct");
     btn.disabled = true;
     btn.textContent = "✓ Виконано";
-    document.getElementById(`answer-${idx}`).readOnly = true;
-    showFeedback(idx, true, "✅ Правильно! Нараховано <strong>2 бали</strong>.", "");
+    document.getElementById(`code-${idx}`).readOnly = true;
+    showFeedback(idx, true, `✅ Всі ${task.testCases.length} тести пройдено! Нараховано <strong>2 бали</strong>.`);
   } else {
+    state.scores[idx]  = 0;
     state.checked[idx] = false;
+    card.classList.add("wrong");
+    btn.disabled = false;
     btn.innerHTML = "↺ Спробувати ще раз";
-    showFeedback(idx, false,
-      "❌ Є помилки або відсутні ключові елементи. Перевір логіку програми і спробуй ще раз!",
-      ""
-    );
+    showFeedback(idx, false, msg);
   }
 
-  updateScoreUI();
+  updateScore();
 }
 
 /* ================================================================
-   ПОКАЗАТИ ЗВОРОТНИЙ ЗВ'ЯЗОК
-   ================================================================ */
-function showFeedback(idx, ok, msg, solution) {
+  ДОПОМІЖНІ
+================================================================ */
+function showFeedback(idx, ok, html) {
   const fb   = document.getElementById(`feedback-${idx}`);
-  const icon = fb.querySelector(".feedback-icon");
-  const text = fb.querySelector(".msg");
-  const sol  = fb.querySelector(".feedback-solution");
-
-  fb.className = `feedback show ${ok ? "ok" : "err"}`;
+  const icon = fb.querySelector(".fb-icon");
+  const text = fb.querySelector(".fb-text");
+  fb.className = `feedback show ${ok ? "ok" : "bad"}`;
   icon.textContent = ok ? "🟢" : "🔴";
-  text.innerHTML   = msg;
-  sol.textContent  = "";
+  text.innerHTML   = html;
+}
+
+function cleanError(err) {
+  return (err.message || String(err))
+    .split("\n")
+    .filter(l => !["_fake_input","_input_queue","_user_code","_buf","_qi","_orig"].some(k => l.includes(k)))
+    .join("\n").trim();
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function updateScore() {
+  const total = state.scores.reduce((a,b) => a+b, 0);
+  const disp  = document.getElementById("score-display");
+  disp.textContent = `${total} / 12`;
+  document.getElementById("prog-fill").style.width = `${(total/12)*100}%`;
+  disp.classList.add("bump");
+  setTimeout(() => disp.classList.remove("bump"), 300);
 }
 
 /* ================================================================
-   ПРОГРЕС-БАР
-   ================================================================ */
-function updateScoreUI() {
-  const total   = state.scores.reduce((a, b) => a + b, 0);
-  const display = document.getElementById("scoreDisplay");
-  document.getElementById("progressFill").style.width = `${(total / 12) * 100}%`;
-  display.textContent = `${total} / 12`;
-  display.classList.add("bump");
-  setTimeout(() => display.classList.remove("bump"), 300);
-}
+  ПЕРЕВІРИТИ ВСІ
+================================================================ */
+async function checkAll() {
+  for (let i = 0; i < TASKS.length; i++) {
+    if (!state.checked[i]) await handleCheck(i);
+  }
 
-/* ================================================================
-   ПЕРЕВІРИТИ ВСІ
-   ================================================================ */
-function checkAll() {
-  TASKS.forEach((_, idx) => { if (!state.checked[idx]) checkOne(idx); });
-
-  const allDone   = state.checked.every(Boolean);
-  const panel     = document.getElementById("resultPanel");
-  panel.className = "result-panel show";
-
+  const allDone = state.checked.every(Boolean);
   if (allDone) {
     showResult();
   } else {
-    const remaining = state.checked.filter(v => !v).length;
-    document.getElementById("resultEmoji").textContent    = "✏️";
-    document.getElementById("resultHeadline").textContent = "Ще не всі завдання виконані правильно";
-    document.getElementById("resultHeadline").style.color = "var(--yellow)";
-    document.getElementById("resultSub").textContent      =
-      `Залишилось виправити: ${remaining} завд. Виправ помилки і спробуй ще раз.`;
-    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    const rem = state.checked.filter(v => !v).length;
+    setResult("✏️", `Ще не всі завдання виконані (залишилось: ${rem})`, "var(--yellow)",
+      "Виправ помилки у відповідних завданнях і спробуй ще раз.");
   }
 }
 
 /* ================================================================
-   ФІНАЛЬНИЙ РЕЗУЛЬТАТ
-   ================================================================ */
+  РЕЗУЛЬТАТ
+================================================================ */
 function showResult() {
-  const total = state.scores.reduce((a, b) => a + b, 0);
-  const emoji = document.getElementById("resultEmoji");
-  const head  = document.getElementById("resultHeadline");
-  const sub   = document.getElementById("resultSub");
-
-  document.getElementById("resultPanel").className = "result-panel show";
-
+  const total = state.scores.reduce((a,b) => a+b, 0);
   const tiers = [
-    [12, "🏆", "Максимальний бал!", "var(--green)",   `Ваш результат: 12 / 12 балів. Чудова робота — Python підкорено!`],
-    [ 8, "🎉", "Добрий результат!", "var(--yellow)",  `Ваш результат: ${total} / 12 балів. Ще трохи практики — і буде відмінно!`],
-    [ 4, "📚", "Є над чим попрацювати", "var(--accent2)", `Ваш результат: ${total} / 12 балів. Повтори теми циклів і умов.`],
-    [ 0, "💪", "Не здавайся!",      "var(--red)",     `Ваш результат: ${total} / 12 балів. Вивчи базові конструкції Python та спробуй ще раз.`]
+    [12, "🏆", "Максимальний бал!",       "var(--green)",   `Ваш результат: 12/12. Чудово — Python підкорено!`],
+    [ 8, "🎉", "Добрий результат!",        "var(--yellow)",  `Ваш результат: ${total}/12. Ще трохи практики!`],
+    [ 4, "📚", "Є над чим попрацювати",    "var(--accent2)", `Ваш результат: ${total}/12. Повтори теми циклів і умов.`],
+    [ 0, "💪", "Не здавайся!",             "var(--red)",     `Ваш результат: ${total}/12. Вивчи базові конструкції Python.`]
   ];
-  const [, e, h, c, s] = tiers.find(([min]) => total >= min);
-  emoji.textContent = e; head.textContent = h; head.style.color = c; sub.textContent = s;
+  const [,e,h,c,s] = tiers.find(([min]) => total >= min);
+  setResult(e, h, c, s);
+}
 
-  document.getElementById("resultPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+function setResult(emoji, headline, color, sub) {
+  document.getElementById("result-emoji").textContent    = emoji;
+  document.getElementById("result-headline").textContent = headline;
+  document.getElementById("result-headline").style.color = color;
+  document.getElementById("result-sub").textContent      = sub;
+  const panel = document.getElementById("result-panel");
+  panel.className = "result-panel show";
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* ================================================================
-   СКИНУТИ
-   ================================================================ */
+  СКИНУТИ
+================================================================ */
 function resetAll() {
   state.scores.fill(0);
   state.checked.fill(false);
   renderCards();
-  updateScoreUI();
-  document.getElementById("resultPanel").className = "result-panel";
+  updateScore();
+  document.getElementById("result-panel").className = "result-panel";
   if (pyodide) document.querySelectorAll(".btn-run").forEach(b => b.disabled = false);
 }
 
 /* ================================================================
-   TAB → 4 пробіли
-   ================================================================ */
-document.addEventListener("keydown", function(e) {
+  ТЕМА
+================================================================ */
+function toggleTheme() {
+  const light = document.documentElement.classList.toggle("light");
+  document.getElementById("theme-label").textContent = light ? "🌙 Темна" : "☀️ Світла";
+  localStorage.setItem("theme", light ? "light" : "dark");
+}
+if (localStorage.getItem("theme") === "light") {
+  document.documentElement.classList.add("light");
+  // Мітку оновимо після завантаження DOM
+  document.addEventListener("DOMContentLoaded", () => {
+    const l = document.getElementById("theme-label");
+    if (l) l.textContent = "🌙 Темна";
+  });
+}
+
+/* ================================================================
+  КЛАВІАТУРА: Tab + розумний Enter (автовідступ) + Backspace
+================================================================ */
+document.addEventListener("keydown", e => {
   if (!e.target.classList.contains("code-area")) return;
   const ta = e.target;
 
-  /* ── TAB → вставити 4 пробіли ── */
   if (e.key === "Tab") {
     e.preventDefault();
     const s = ta.selectionStart, end = ta.selectionEnd;
@@ -981,45 +899,26 @@ document.addEventListener("keydown", function(e) {
     return;
   }
 
-  /* ── Enter → розумний автовідступ ── */
   if (e.key === "Enter") {
     e.preventDefault();
     const s   = ta.selectionStart;
-    const end = ta.selectionEnd;
     const val = ta.value;
-
-    // Знаходимо початок поточного рядка
     const lineStart = val.lastIndexOf("\n", s - 1) + 1;
-    const currentLine = val.substring(lineStart, s);
-
-    // Підраховуємо кількість пробілів-відступу на поточному рядку
-    const indentMatch = currentLine.match(/^(\s*)/);
-    let indent = indentMatch ? indentMatch[1] : "";
-
-    // Якщо рядок закінчується на ":" — додаємо ще 4 пробіли
-    const trimmed = currentLine.trimEnd();
-    if (trimmed.endsWith(":")) {
-      indent += "    ";
-    }
-
-    // Вставляємо новий рядок з відступом
-    const insertion = "\n" + indent;
-    ta.value = val.substring(0, s) + insertion + val.substring(end);
-    ta.selectionStart = ta.selectionEnd = s + insertion.length;
+    const curLine   = val.substring(lineStart, s);
+    let indent = (curLine.match(/^(\s*)/) || ["",""])[1];
+    if (curLine.trimEnd().endsWith(":")) indent += "    ";
+    const ins = "\n" + indent;
+    ta.value = val.substring(0, s) + ins + val.substring(ta.selectionEnd);
+    ta.selectionStart = ta.selectionEnd = s + ins.length;
     return;
   }
 
-  /* ── Backspace → видаляємо 4 пробіли якщо курсор після відступу ── */
-  if (e.key === "Backspace") {
-    const s = ta.selectionStart;
-    const end = ta.selectionEnd;
-    // Тільки якщо немає виділення
-    if (s !== end) return;
+  if (e.key === "Backspace" && ta.selectionStart === ta.selectionEnd) {
+    const s   = ta.selectionStart;
     const val = ta.value;
-    const lineStart = val.lastIndexOf("\n", s - 1) + 1;
+    const lineStart  = val.lastIndexOf("\n", s - 1) + 1;
     const beforeCursor = val.substring(lineStart, s);
-    // Якщо перед курсором рівно 4 пробіли (або кратно 4) — видаляємо блок
-    if (beforeCursor.length > 0 && beforeCursor.match(/^ +$/) && beforeCursor.length % 4 === 0) {
+    if (beforeCursor.length > 0 && /^ +$/.test(beforeCursor) && beforeCursor.length % 4 === 0) {
       e.preventDefault();
       ta.value = val.substring(0, s - 4) + val.substring(s);
       ta.selectionStart = ta.selectionEnd = s - 4;
@@ -1028,30 +927,8 @@ document.addEventListener("keydown", function(e) {
 });
 
 /* ================================================================
-   ПЕРЕМИКАЧ ТЕМИ
-   ================================================================ */
-function toggleTheme() {
-  const isLight = document.documentElement.classList.toggle('light');
-  document.getElementById('toggleLabel').textContent = isLight ? '🌙 Темна' : '☀️ Світла';
-  localStorage.setItem('theme', isLight ? 'light' : 'dark');
-}
-
-// Відновлюємо збережену тему при завантаженні
-(function() {
-  const saved = localStorage.getItem('theme');
-  if (saved === 'light') {
-    document.documentElement.classList.add('light');
-    // Мітку оновимо після рендеру DOM
-    document.addEventListener('DOMContentLoaded', function() {
-      const lbl = document.getElementById('toggleLabel');
-      if (lbl) lbl.textContent = '🌙 Темна';
-    });
-  }
-})();
-
-/* ================================================================
-   СТАРТ
-   ================================================================ */
+  СТАРТ
+================================================================ */
 renderCards();
 </script>
 </body>
